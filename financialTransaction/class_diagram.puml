@@ -1,0 +1,97 @@
+@startuml Transaction
+
+' ==== КЛАСИ ====
+
+class Transaction {
+    - operationType : string
+    - amount : double
+    - accountId : string
+    - timestamp : time_t
+    - description : string
+
+    +Transaction(type : string, amount : double, accountId : string, description : string, timestamp : time_t)
+    +getOperationType() : string
+    +getAmount() : double
+    +getAccountId() : string
+    +getTimestamp() : time_t
+    +getDescription() : string
+    +getFormattedDateTime() : string
+}
+
+class Account {
+    - accountId : string
+    - balance : double
+
+    +Account()
+    +Account(id : string, initialBalance : double)
+    +withdraw(amount : double) : bool
+    +deposit(amount : double) : void
+    +getBalance() : double
+    +getId() : string
+}
+
+class TransactionManager {
+    - transactions : deque<Transaction*>
+    - accounts : map<string, Account>
+    - transactionFile : string
+
+    +TransactionManager(filename : string)
+    +~TransactionManager()
+    +executeCommand(command : Command*) : bool
+    +accountExists(accountId : string) : bool
+    +checkAmount(amount : double) : bool
+    +getAccountBalance(accountId : string) : double
+    +createAccountIfNotExists(accountId : string) : void
+    +canWithdraw(accountId : string, amount : double) : bool
+    +searchByType(type : string) : vector<Transaction*>
+    +searchByAccount(accountId : string) : vector<Transaction*>
+    +searchByAmount(min : double, max : double) : vector<Transaction*>
+    +printTransactions() : void
+    +printTransactions(transactionList : deque<Transaction*>) : void
+}
+
+abstract class Command {
+    {abstract} +execute() : Transaction*
+}
+
+class DepositCommand {
+    - accountId : string
+    - amount : double
+
+    +DepositCommand(accountId : string, amount : double)
+    +execute() : Transaction*
+}
+
+class WithdrawCommand {
+    - accountId : string
+    - amount : double
+
+    +WithdrawCommand(accountId : string, amount : double)
+    +execute() : Transaction*
+}
+
+class TransferCommand {
+    - sourceAccount : string
+    - targetAccount : string
+    - amount : double
+
+    +TransferCommand(from : string, to : string, amount : double)
+    +execute() : Transaction*
+    +getTargetAccount() : string
+}
+
+' ==== СПАДКУВАННЯ ====
+DepositCommand --|> Command
+WithdrawCommand --|> Command
+TransferCommand --|> Command
+
+' ==== КОМПОЗИЦІЯ ====
+TransactionManager *-- "0..*" Transaction : transactions
+
+' ==== АГРЕГАЦІЯ ====
+TransactionManager o-- "0..*" Account : accounts
+
+' ==== ЗАЛЕЖНІСТЬ ====
+TransactionManager ..> Command : <<use>>
+
+@enduml

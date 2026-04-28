@@ -1,0 +1,42 @@
+@startuml Transaction Manager
+start
+
+:system("chcp 65001");
+:create TransactionManager;
+:set choice;
+
+repeat
+    :displayMenu();
+    :cin >> choice;
+    :clearInputBuffer();
+
+    switch (choice)
+        case (1)
+            :handleDeposit(manager);
+        case (2)
+            :handleWithdrawal(manager);
+        case (3)
+            :handleTransfer(manager);
+        case (4)
+            :handleSearchByType(manager);
+        case (5)
+            :handleSearchByAccount(manager);
+        case (6)
+            :handleSearchByAmount(manager);
+        case (7)
+            :manager.printTransactions();
+        case (0)
+            :Print "Дякуємо за використання програми!";
+        else
+            :Print "[Помилка] Невірний вибір!";
+    endswitch
+
+    if (choice != 0) then (так)
+        :Print "Натисніть Enter для продовження...";
+        :cin.get();
+    endif
+
+repeat while (choice != 0)
+
+stop
+@enduml
